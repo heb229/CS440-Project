@@ -6,11 +6,10 @@ const supabase = createClient(
 )
 
 export default async function handler(req, res) {
-  const { movie_id } = req.query
+  if (req.method === 'GET') {
+    const { movie_id } = req.query
+    if (!movie_id) return res.status(400).json({ error: 'movie_id is required' })
 
-  if (!movie_id) return res.status(400).json({ error: 'movie_id is required' })
-
-  try {
     const { data, error } = await supabase
       .from('movie_critiques')
       .select('*')
@@ -18,10 +17,23 @@ export default async function handler(req, res) {
       .order('created_at', { ascending: false })
 
     if (error) return res.status(500).json({ error: error.message })
-
-    res.status(200).json(data)
-  } catch (err) {
-    console.error('API error:', err)
-    res.status(500).json({ error: err.message })
+    return res.status(200).json(data)
   }
+
+  if (req.method === 'POST') {
+    const { movie_id, title, author, content } = req.body
+    if (!movie_id || !title || !author || !content) {
+      return res.status(400).json({ error: 'All fields are required' })
+    }
+
+    const { data, error } = await supabase
+      .from('movie_critiques')
+      .insert([{ movie_id, title, author, content }])
+      .select()
+
+    if (error) return res.status(500).json({ error: error.message })
+    return res.status(201).json(data[0])
+  }
+
+  res.status(405).json({ error: 'Method not allowed' })
 }
