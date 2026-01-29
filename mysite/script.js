@@ -3,6 +3,7 @@ const search = document.getElementById('search')
 const sort = document.getElementById('sort')
 const toggleOrderBtn = document.getElementById('toggleOrder')
 const genreCheckboxes = document.querySelectorAll('#genre-filters input[type="checkbox"]')
+const genreModeRadios = document.querySelectorAll('input[name="genre-mode"]')
 
 let sortOrder = 'asc'
 
@@ -10,6 +11,9 @@ async function loadMovies() {
   const selectedGenres = Array.from(genreCheckboxes)
     .filter(cb => cb.checked)
     .map(cb => cb.value)
+
+  // Get AND/OR mode
+  const mode = Array.from(genreModeRadios).find(r => r.checked)?.value || 'or'
 
   const params = new URLSearchParams({
     search: search.value,
@@ -19,6 +23,7 @@ async function loadMovies() {
 
   if (selectedGenres.length > 0) {
     params.set('genre', selectedGenres.join(','))
+    params.set('mode', mode) // pass mode to API
   }
 
   const res = await fetch(`/api/movies?${params}`)
@@ -45,6 +50,7 @@ async function loadMovies() {
 search.oninput = loadMovies
 sort.onchange = loadMovies
 genreCheckboxes.forEach(cb => cb.onchange = loadMovies)
+genreModeRadios.forEach(r => r.onchange = loadMovies)
 toggleOrderBtn.onclick = () => {
   sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'
   loadMovies()
