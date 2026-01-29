@@ -39,16 +39,13 @@ export default async function handler(req, res) {
     
     // match any genre partially
     // For text field, use OR conditions with ilike
-    let genreFilter = query
-    genres.forEach((g, i) => {
-      if (i === 0) {
-        genreFilter = genreFilter.ilike('genre', `%${g}%`)
-      } else {
-        genreFilter = genreFilter.or(`genre.ilike.%${g}%`)
-      }
-    })
-    query = genreFilter
+  if (genres && genres.length > 0) {
+    // Create an array of "genre.ilike.%<genre>%" strings
+    const conditions = genres.map(g => `genre.ilike.%${g}%`)
+    // Join them with commas for Supabase `or` query
+    query = query.or(conditions.join(','))
   }
+
 
   // Filter by year
   if (year) {
