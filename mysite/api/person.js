@@ -18,27 +18,32 @@ const supabase = createClient(
 export default async function handler(req, res) {
   const { id } = req.query
 
-  // 1️⃣ Get person
-  const { data: person, error } = await supabase
+  // get person
+  const { data: person, error: personError } = await supabase
     .from('people')
     .select('*')
     .eq('id', id)
     .single()
 
-  if (error) {
-    return res.status(500).json({ error: error.message })
+  if (personError) {
+    return res.status(500).json({ error: personError.message })
   }
 
-  // 2️⃣ Get movies via cast table
-  const { data: roles } = await supabase
+  // movies they acted in
+  const { data: actedMovies = [] } = await supabase
     .from('movie_cast')
-    .select(`
-      movies (*)
-    `)
+    .select('movies(*)')
     .eq('person_id', id)
+
+  // movies they directed
+  const { data: directedMovies = [] } = await supabase
+    .from('movies')
+    .select('*')
+    .eq('director_id', id)
 
   res.status(200).json({
     ...person,
-    movies: roles.map(r => r.movies)
+    actedMovies: actedMovies.map(r => r.movies),
+    directedMovies
   })
 }
