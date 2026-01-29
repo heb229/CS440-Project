@@ -34,12 +34,6 @@ export default async function handler(req, res) {
 
   // Filter by genre(s)
   if (genre) {
-    // split comma-separated genres
-    const genres = genre.split(',').map(g => g.trim())
-    
-    // match any genre partially
-    // For text field, use OR conditions with ilike
-  if (genre) {
     const genres = genre.split(',').map(g => g.trim())
     if (genres.length > 0) {
       // Supabase expects OR conditions as comma-separated string
@@ -47,8 +41,6 @@ export default async function handler(req, res) {
       query = query.or(conditions)
     }
   }
-
-
 
   // Filter by year
   if (year) {
@@ -65,6 +57,7 @@ export default async function handler(req, res) {
   const ascending = order.toLowerCase() === 'asc'
   query = query.order(sort, { ascending })
 
+  // Execute query
   const { data, error } = await query
 
   if (error) {
