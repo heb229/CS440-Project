@@ -1,0 +1,35 @@
+/*
+Page for the actors/directors
+*/
+
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+)
+
+/*
+GET /api/person?id=45
+Shows bio + movies
+*/
+export default async function handler(req, res) {
+  const { id } = req.query
+
+  const { data, error } = await supabase
+    .from('people')
+    .select(`
+      *,
+      movies:movie_cast(
+        movies(*)
+      )
+    `)
+    .eq('id', id)
+    .single()
+
+  if (error) {
+    return res.status(500).json({ error: error.message })
+  }
+
+  res.status(200).json(data)
+}
