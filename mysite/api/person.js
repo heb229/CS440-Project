@@ -4,18 +4,15 @@ Page for the actors/directors
 
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
+const supabase = createClient
+  (
   process.env.SUPABASE_URL,
   process.env.SUPABASE_ANON_KEY
-)
+  )
 
-/**
- * GET /api/person?id=45
- * Returns:
- *  - person
- *  - movies they worked on
- */
-export default async function handler(req, res) {
+
+export default async function handler(req, res) 
+  {
   const { id } = req.query
 
   // get person
@@ -25,9 +22,13 @@ export default async function handler(req, res) {
     .eq('id', id)
     .single()
 
-  if (personError) {
-    return res.status(500).json({ error: personError.message })
-  }
+  if (personError) 
+    {
+    return res.status(500).json(
+      { 
+        error: personError.message 
+      })
+    }
 
   // movies they acted in
   const { data: actedMovies = [] } = await supabase
