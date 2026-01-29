@@ -6,7 +6,7 @@ const supabase = createClient(
 )
 
 export default async function handler(req, res) {
-  const { search, genre, sort = 'title', order = 'asc', year, decade } = req.query
+  const { search, genre, mode = 'or', sort = 'title', order = 'asc', year, decade } = req.query
 
   try {
     let query = supabase.from('movies').select('*')
@@ -17,9 +17,18 @@ export default async function handler(req, res) {
     // Multi-genre filter
     if (genre) {
       const genres = genre.split(',').map(g => g.trim())
+
       if (genres.length > 0) {
-        const conditions = genres.map(g => `genre.ilike.%${g}%`).join(',')
-        query = query.or(conditions)
+        if (mode === 'or') {
+          // OR: match any genre
+          const conditions = genres.map(g => `genre.ilike.%${g}%`).join(',')
+          query = query.or(conditions)
+        } else {
+          // AND: must match all selected genres
+          genres.forEach(g => {
+            query = query.ilike('genre', `%${g}%`)
+          })
+        }
       }
     }
 
