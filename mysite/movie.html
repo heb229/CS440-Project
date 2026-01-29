@@ -6,10 +6,27 @@
 <ul id="cast"></ul>
 
 <h3>Critiques</h3>
-<ul id="critiques"></ul> <!-- NEW -->
+<ul id="critiques"></ul> <!-- existing list -->
+
+<!-- New: Submit Critique Form -->
+<h3>Submit a Critique</h3>
+<form id="critique-form">
+  <input type="text" id="critique-title" placeholder="Title" required /><br><br>
+  <input type="text" id="critique-author" placeholder="Your Name" required /><br><br>
+  <textarea id="critique-content" placeholder="Your critique…" required></textarea><br><br>
+  <button type="submit">Submit</button>
+</form>
 
 <script>
   const id = new URLSearchParams(location.search).get('id')
+
+  const castList = document.getElementById('cast')
+  const critiquesList = document.getElementById('critiques')
+
+  const form = document.getElementById('critique-form')
+  const titleInput = document.getElementById('critique-title')
+  const authorInput = document.getElementById('critique-author')
+  const contentInput = document.getElementById('critique-content')
 
   // Fetch movie info
   fetch(`/api/movie?id=${id}`)
@@ -26,27 +43,62 @@
       movie.cast.forEach(person => {
         const li = document.createElement('li')
         li.innerHTML = `<a href="person.html?id=${person.id}">${person.name}</a>`
-        document.getElementById('cast').appendChild(li)
+        castList.appendChild(li)
       })
     })
 
-  // Fetch critiques
-  fetch(`/api/critiques?movie_id=${id}`)
-    .then(res => res.json())
-    .then(critiques => {
-      const list = document.getElementById('critiques')
-      if (!critiques || critiques.length === 0) {
-        list.innerHTML = '<li>No critiques available.</li>'
-        return
-      }
+  // Function to load critiques
+  async function loadCritiques() {
+    const res = await fetch(`/api/critiques?movie_id=${id}`)
+    const critiques = await res.json()
 
-      critiques.forEach(c => {
-        const li = document.createElement('li')
-        li.innerHTML = `
-          <strong>${c.title}</strong> by ${c.author} (${new Date(c.created_at).toLocaleDateString()})
-          <p>${c.content}</p>
-        `
-        list.appendChild(li)
-      })
+    critiquesList.innerHTML = ''
+    if (!critiques || critiques.length === 0) {
+      critiquesList.innerHTML = '<li>No critiques available.</li>'
+      return
+    }
+
+    critiques.forEach(c => {
+      const li = document.createElement('li')
+      li.innerHTML = `
+        <strong>${c.title}</strong> by ${c.author} (${new Date(c.created_at).toLocaleDateString()})
+        <p>${c.content}</p>
+      `
+      critiquesList.appendChild(li)
     })
+  }
+
+  // Initial load of critiques
+  loadCritiques()
+
+  // Handle form submission
+  form.onsubmit = async (e) => {
+    e.preventDefault()
+
+    const payload = {
+      movie_id: id,
+      title: titleInput.value,
+      author: authorInput.value,
+      content: contentInput.value
+    }
+
+    const res = await fetch('/api/critiques', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+
+    const data = await res.json()
+
+    if (res.ok) {
+      // Clear form
+      titleInput.value = ''
+      authorInput.value = ''
+      contentInput.value = ''
+      // Refresh critiques list
+      loadCritiques()
+    } else {
+      alert('Error submitting critique: ' + data.error)
+    }
+  }
 </script>
