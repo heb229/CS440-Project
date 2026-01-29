@@ -8,8 +8,8 @@ const supabase = createClient(
 /**
  * GET /api/movies
  * Query params:
- *  - search
- *  - genre
+ *  - search (partial title)
+ *  - genre (comma-separated for multiple genres)
  *  - sort (title | year | rating)
  *  - order (asc | desc)
  *  - year
@@ -27,28 +27,43 @@ export default async function handler(req, res) {
 
   let query = supabase.from('movies').select('*')
 
-  // search by partial title
+  // Search by partial title
   if (search) {
     query = query.ilike('title', `%${search}%`)
   }
 
-  // filter by genre
+  // Filter by genre(s)
   if (genre) {
-    query = query.eq('genre', genre)
+    // split comma-separated genres
+    const genres = genre.split(',').map(g => g.trim())
+    
+    // match any genre partially
+    // For text field, use OR conditions with ilike
+    let genreFilter = query
+    genres.forEach((g, i) => {
+      if (i === 0) {
+        genreFilter = genreFilter.ilike('genre', `%${g}%`)
+      } else {
+        genreFilter = genreFilter.or(`genre.ilike.%${g}%`)
+      }
+    })
+    query = genreFilter
   }
 
-  // filter by year or decade
+  // Filter by year
   if (year) {
-    query = query.eq('year', year)
+    query = query.eq('year', parseInt(year))
   }
 
+  // Filter by decade
   if (decade) {
     const start = parseInt(decade)
     query = query.gte('year', start).lt('year', start + 10)
   }
 
-  // sorting
-  query = query.order(sort, { ascending: order === 'asc' })
+  // Sorting
+  const ascending = order.toLowerCase() === 'asc'
+  query = query.order(sort, { ascending })
 
   const { data, error } = await query
 
