@@ -2,6 +2,8 @@ const list = document.getElementById('movies')
 const search = document.getElementById('search')
 const genre = document.getElementById('genre')
 const sort = document.getElementById('sort')
+const toggleOrderBtn = document.getElementById('toggleOrder')
+
 
 // default order
 let sortOrder = 'asc'
@@ -41,10 +43,11 @@ genre.onchange = loadMovies
 sort.onchange = loadMovies
 
 // Double-click sort dropdown to toggle ascending/descending
-sort.ondblclick = () => {
+toggleOrderBtn.onclick = () => {
   sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'
   loadMovies()
 }
+
 
 // Initial load
 loadMovies()
