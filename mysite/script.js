@@ -30,7 +30,7 @@ async function loadMovies() {
     const li = document.createElement('li')
     li.innerHTML = `
       <a href="movie.html?id=${movie.id}">
-        ${movie.title} (${movie.year}) – Rating: ${movie.rating} – <em>${movie.genre}</em>
+        ${movie.title} (${movie.year}) | Rating: ${movie.rating} | <em>${movie.genre}</em>
       </a>
     `
     list.appendChild(li)
