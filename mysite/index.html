@@ -6,25 +6,30 @@
 <body>
   <h1>Movies</h1>
 
+  <!-- Search box -->
   <input id="search" placeholder="Search title…" />
-  <select id="genre">
-    <option value="">All Genres</option>
-    <option>Action</option>
-    <option>Drama</option>
-    <option>Crime</option>
-    <option>War</option>
-    <option>Comedy</option>
-    <option>Sci-Fi</option>
-  </select>
 
+  <!-- Multi-genre filters -->
+  <div id="genre-filters">
+    <label><input type="checkbox" value="Action"> Action</label>
+    <label><input type="checkbox" value="Drama"> Drama</label>
+    <label><input type="checkbox" value="Crime"> Crime</label>
+    <label><input type="checkbox" value="War"> War</label>
+    <label><input type="checkbox" value="Comedy"> Comedy</label>
+    <label><input type="checkbox" value="Sci-Fi"> Sci-Fi</label>
+  </div>
+
+  <!-- Sorting -->
   <select id="sort">
     <option value="title">Title A–Z</option>
     <option value="year">Release Year</option>
     <option value="rating">Rating</option>
   </select>
 
+  <!-- Toggle ascending/descending -->
   <button id="toggleOrder">Asc/Desc</button>
 
+  <!-- Movie list -->
   <ul id="movies"></ul>
 
   <script src="script.js"></script>
