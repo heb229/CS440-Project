@@ -30,7 +30,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: movieError.message })
   }
 
-  // 2️Get director
+  // Get director
   let director = null
   if (movie.director_id) {
     const { data } = await supabase
@@ -41,7 +41,7 @@ export default async function handler(req, res) {
     director = data
   }
 
-  // 3️Get cast
+  // Get cast
   const { data: cast } = await supabase
     .from('movie_cast')
     .select(`
