@@ -8,16 +8,41 @@ const supabase = createClient(
 export default async function handler(req, res) {
   if (req.method === 'GET') {
     const { movie_id } = req.query
-    if (!movie_id) return res.status(400).json({ error: 'movie_id is required' })
 
-    const { data, error } = await supabase
-      .from('movie_critiques')
-      .select('*')
-      .eq('movie_id', movie_id)
-      .order('created_at', { ascending: false })
+    try {
+      // Select critiques and include movie title
+      let query = supabase
+        .from('movie_critiques')
+        .select(`
+          *,
+          movies!inner(title)
+        `) // assumes foreign key is set up in Supabase
 
-    if (error) return res.status(500).json({ error: error.message })
-    return res.status(200).json(data)
+      if (movie_id) {
+        query = query.eq('movie_id', movie_id)
+      }
+
+      query = query.order('created_at', { ascending: false })
+
+      const { data, error } = await query
+      if (error) return res.status(500).json({ error: error.message })
+
+      // Map for frontend convenience
+      const critiques = data.map(c => ({
+        id: c.id,
+        movie_id: c.movie_id,
+        movie_title: c.movies.title,
+        title: c.title,
+        author: c.author,
+        content: c.content,
+        created_at: c.created_at
+      }))
+
+      return res.status(200).json(critiques)
+    } catch (err) {
+      console.error('API error:', err)
+      return res.status(500).json({ error: err.message })
+    }
   }
 
   if (req.method === 'POST') {
