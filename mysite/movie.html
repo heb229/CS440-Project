@@ -1,5 +1,8 @@
 <h1 id="title"></h1>
+<p id="director"></p>
 <p id="synopsis"></p>
+
+<h3>Cast</h3>
 <ul id="cast"></ul>
 
 <script>
@@ -11,9 +14,16 @@
       document.getElementById('title').textContent = movie.title
       document.getElementById('synopsis').textContent = movie.synopsis
 
-      movie.cast.forEach(c => {
+      if (movie.director) {
+        document.getElementById('director').innerHTML =
+          `Director: <a href="person.html?id=${movie.director.id}">
+            ${movie.director.name}
+          </a>`
+      }
+
+      movie.cast.forEach(person => {
         const li = document.createElement('li')
-        li.innerHTML = `<a href="person.html?id=${c.people.id}">${c.people.name}</a>`
+        li.innerHTML = `<a href="person.html?id=${person.id}">${person.name}</a>`
         document.getElementById('cast').appendChild(li)
       })
     })
