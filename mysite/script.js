@@ -1,15 +1,35 @@
-fetch('/api/items')
-  .then(response => response.json())
-  .then(items => {
-    const list = document.getElementById('item-list')
+const list = document.getElementById('movies')
+const search = document.getElementById('search')
+const genre = document.getElementById('genre')
+const sort = document.getElementById('sort')
 
-    items.forEach(item => {
-      const li = document.createElement('li')
-      li.textContent = `${item.name} – $${item.price}`
-      list.appendChild(li)
-    })
+async function loadMovies() {
+  const params = new URLSearchParams({
+    search: search.value,
+    genre: genre.value,
+    sort: sort.value
   })
-  .catch(err => {
-    console.error('Error loading items:', err)
+
+  const res = await fetch(`/api/movies?${params}`)
+  const movies = await res.json()
+
+  list.innerHTML = ''
+
+  movies.forEach(movie => {
+    const li = document.createElement('li')
+    li.innerHTML = `
+      <a href="movie.html?id=${movie.id}">
+        ${movie.title} (${movie.year}) – ⭐ ${movie.rating}
+      </a>
+    `
+    list.appendChild(li)
   })
+}
+
+search.oninput = loadMovies
+genre.onchange = loadMovies
+sort.onchange = loadMovies
+
+loadMovies()
+
 
