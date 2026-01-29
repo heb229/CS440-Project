@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Movie Critiques</title>
+  <style>
+    body { font-family: sans-serif; }
+    .critique { border-bottom: 1px solid #ccc; padding: 10px 0; }
+    .critique h3 { margin: 0; }
+    .critique small { color: gray; }
+  </style>
+</head>
+<body>
+  <h1 id="movie-title">Movie Critiques</h1>
+  <ul id="critiques"></ul>
+
+  <script>
+    const urlParams = new URLSearchParams(location.search)
+    const movieId = urlParams.get('id')
+
+    if (!movieId) {
+      document.body.innerHTML = '<p>Movie ID missing.</p>'
+    } else {
+      fetch(`/api/critiques?movie_id=${movieId}`)
+        .then(res => res.json())
+        .then(data => {
+          const list = document.getElementById('critiques')
+          if (!data || data.length === 0) {
+            list.innerHTML = '<li>No critiques available.</li>'
+            return
+          }
+
+          data.forEach(c => {
+            const li = document.createElement('li')
+            li.className = 'critique'
+            li.innerHTML = `
+              <h3>${c.title}</h3>
+              <small>By ${c.author} on ${new Date(c.created_at).toLocaleDateString()}</small>
+              <p>${c.content}</p>
+            `
+            list.appendChild(li)
+          })
+        })
+    }
+  </script>
+</body>
+</html>
