@@ -1,81 +1,128 @@
-<nav>
-  <a href="index.html">Home</a>
-  <a href="movie_critiques.html">Critiques</a>
-</nav>
- 
 <!doctype html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="utf-8" />
     <title>Movie Catalog</title>
-    <style>
-      body {
-        font-family: sans-serif;
-      }
-      #genre-filters label {
-        margin-right: 10px;
-      }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Bootstrap CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
       rel="stylesheet"
-      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
-      crossorigin="anonymous"
     />
+
+    <!-- Optional custom styles -->
+    <style>
+      #genre-filters label {
+        margin-right: 12px;
+      }
+    </style>
   </head>
+
   <body>
-    <h1>Movies</h1>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="index.html">Movie Catalog</a>
+        <div class="navbar-nav">
+          <a class="nav-link active" href="index.html">Home</a>
+          <a class="nav-link" href="movie_critiques.html">Critiques</a>
+        </div>
+      </div>
+    </nav>
 
-    <!-- Search box -->
-    <input id="search" placeholder="Search title…" />
+    <!-- Main content -->
+    <main class="container py-4">
+      <h1 class="mb-4">Movies</h1>
 
-    <!-- AND / OR toggle -->
-    <div>
-      <label>
-        <input type="radio" name="genre-mode" value="or" checked /> Any (OR)
-      </label>
-      <label>
-        <input type="radio" name="genre-mode" value="and" /> All (AND)
-      </label>
-    </div>
+      <!-- Search -->
+      <div class="mb-3">
+        <input
+          id="search"
+          class="form-control"
+          placeholder="Search title…"
+        />
+      </div>
 
-    <!-- Multi-genre filters -->
-    <div id="genre-filters">
-      <label><input type="checkbox" value="Action" /> Action</label>
-      <label><input type="checkbox" value="Drama" /> Drama</label>
-      <label><input type="checkbox" value="Crime" /> Crime</label>
-      <label><input type="checkbox" value="War" /> War</label>
-      <label><input type="checkbox" value="Comedy" /> Comedy</label>
-      <label><input type="checkbox" value="Sci-Fi" /> Sci-Fi</label>
-      <label><input type="checkbox" value="Biography" /> Biography</label>
-    </div>
+      <!-- AND / OR toggle -->
+      <div class="mb-3">
+        <div class="form-check form-check-inline">
+          <input
+            class="form-check-input"
+            type="radio"
+            name="genre-mode"
+            value="or"
+            checked
+          />
+          <label class="form-check-label">Any (OR)</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input
+            class="form-check-input"
+            type="radio"
+            name="genre-mode"
+            value="and"
+          />
+          <label class="form-check-label">All (AND)</label>
+        </div>
+      </div>
 
-    <!-- Sorting -->
-    <select id="sort">
-      <option value="title">Title A–Z</option>
-      <option value="year">Release Year</option>
-      <option value="rating">Rating</option>
-    </select>
+      <!-- Genre filters -->
+      <div id="genre-filters" class="mb-3">
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" value="Action" />
+          <label class="form-check-label">Action</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" value="Drama" />
+          <label class="form-check-label">Drama</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" value="Crime" />
+          <label class="form-check-label">Crime</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" value="War" />
+          <label class="form-check-label">War</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" value="Comedy" />
+          <label class="form-check-label">Comedy</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" value="Sci-Fi" />
+          <label class="form-check-label">Sci-Fi</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" value="Biography" />
+          <label class="form-check-label">Biography</label>
+        </div>
+      </div>
 
-    <!-- Toggle ascending/descending -->
-    <button id="toggleOrder">Asc/Desc</button>
+      <!-- Sorting -->
+      <div class="row g-2 align-items-center mb-4">
+        <div class="col-auto">
+          <select id="sort" class="form-select">
+            <option value="title">Title A–Z</option>
+            <option value="year">Release Year</option>
+            <option value="rating">Rating</option>
+          </select>
+        </div>
+        <div class="col-auto">
+          <button id="toggleOrder" class="btn btn-secondary">
+            Asc / Desc
+          </button>
+        </div>
+      </div>
 
-    <!-- Movie list -->
-    <ul id="movies"></ul>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
-      integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y"
-      crossorigin="anonymous"
-    ></script>
+      <!-- Movie list -->
+      <ul id="movies" class="list-group"></ul>
+    </main>
+
+    <!-- Bootstrap JS (bundle includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Your app logic -->
     <script src="script.js"></script>
   </body>
 </html>
