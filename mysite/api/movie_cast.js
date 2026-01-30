@@ -1,7 +1,7 @@
 /*
 This is for the more details page (singular movie)
 */
-
+ 
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
