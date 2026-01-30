@@ -1,7 +1,7 @@
 /*
 Page for the actors/directors
 */
-
+ 
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
