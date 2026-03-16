@@ -1,0 +1,49 @@
+<%- include('partials/header', { title: person.name + ' - Person Details' }) %>
+
+<!-- Person information -->
+<section class = "page-section">
+    <div class = "detail-card">
+        <h2><%= person.name %></h2>
+        <p><strong>Role:</strong> <%= person.role || 'N/A' %></p>
+        <p><strong>Birth Year:</strong> <%= person.birth_year || 'N/A' %></p>
+        <p><strong>Bio:</strong> <%= person.bio || 'No biography available.' %></p>
+    </div>
+</section>
+
+<!-- Acting credits -->
+<section class = "page-section">
+    <h3>Acted In</h3>
+
+    <% if (!person.actedMovies || person.actedMovies.length === 0) { %>
+        <p>No acting credits found.</p>
+    <% } else { %>
+        <ul class = "list-box">
+            <% person.actedMovies.forEach(function (movie) { %>
+                <li>
+                    <a href = "/movie/<%= movie.id %>"><%= movie.title %></a>
+                    (<%= movie.year || 'N/A' %>)
+                </li>
+            <% }); %>
+        </ul>
+    <% } %>
+</section>
+
+<!-- Directing credits -->
+<section class = "page-section">
+    <h3>Directed</h3>
+
+    <% if (!person.directedMovies || person.directedMovies.length === 0) { %>
+        <p>No directing credits found.</p>
+    <% } else { %>
+        <ul class = "list-box">
+            <% person.directedMovies.forEach(function (movie) { %>
+                <li>
+                    <a href = "/movie/<%= movie.id %>"><%= movie.title %></a>
+                    (<%= movie.year || 'N/A' %>)
+                </li>
+            <% }); %>
+        </ul>
+    <% } %>
+</section>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,88 @@
+<%- include('partials/header', { title: movie.title + ' - Movie Details' }) %>
+
+<!-- Main movie details -->
+<section class = "page-section">
+    <div class = "detail-card">
+        <h2><%= movie.title %></h2>
+
+        <p><strong>Year:</strong> <%= movie.year || 'N/A' %></p>
+        <p><strong>Genre:</strong> <%= movie.genre || 'N/A' %></p>
+        <p><strong>Description:</strong> <%= movie.description || 'No description available.' %></p>
+
+        <p>
+            <strong>Director:</strong>
+            <% if (movie.director) { %>
+                <a href = "/people/<%= movie.director.id %>"><%= movie.director.name %></a>
+            <% } else { %>
+                N/A
+            <% } %>
+        </p>
+    </div>
+</section>
+
+<!-- Cast list -->
+<section class = "page-section">
+    <h3>Cast</h3>
+
+    <% if (!movie.cast || movie.cast.length === 0) { %>
+        <p>No cast listed.</p>
+    <% } else { %>
+        <ul class = "list-box">
+            <% movie.cast.forEach(function (person) { %>
+                <li>
+                    <a href = "/people/<%= person.id %>"><%= person.name %></a>
+                </li>
+            <% }); %>
+        </ul>
+    <% } %>
+</section>
+
+<!-- Existing critiques -->
+<section class = "page-section">
+    <h3>Critiques</h3>
+
+    <% if (!critiques || critiques.length === 0) { %>
+        <p>No critiques yet.</p>
+    <% } else { %>
+        <div class = "stack">
+            <% critiques.forEach(function (critique) { %>
+                <article class = "card">
+                    <h4><%= critique.title %></h4>
+                    <p><strong>Author:</strong> <%= critique.author %></p>
+                    <p><%= critique.content %></p>
+                    <p class = "muted">
+                        <strong>Created:</strong> <%= critique.created_at %>
+                    </p>
+                </article>
+            <% }); %>
+        </div>
+    <% } %>
+</section>
+
+<!-- Critique submission form -->
+<section class = "page-section">
+    <h3>Add a Critique</h3>
+
+    <form method = "POST" action = "/critiques" class = "filter-form">
+        <input type = "hidden" name = "movie_id" value = "<%= movie.id %>" />
+
+        <div class = "form-group">
+            <label for = "title">Critique Title</label>
+            <input type = "text" id = "title" name = "title" required />
+        </div>
+
+        <div class = "form-group">
+            <label for = "author">Author</label>
+            <input type = "text" id = "author" name = "author" required />
+        </div>
+
+        <div class = "form-group">
+            <label for = "content">Content</label>
+            <textarea id = "content" name = "content" rows = "5" required></textarea>
+        </div>
+
+        <button type = "submit" class = "btn">Submit Critique</button>
+    </form>
+</section>
+
+<%- include('partials/footer') %>

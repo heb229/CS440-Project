@@ -1,0 +1,29 @@
+<%- include('partials/header', { title: 'All Critiques' }) %>
+
+<!-- All critiques in the database -->
+<section class = "page-section">
+    <h2>All Critiques</h2>
+
+    <% if (!critiques || critiques.length === 0) { %>
+        <p>No critiques available.</p>
+    <% } else { %>
+        <div class = "stack">
+            <% critiques.forEach(function (critique) { %>
+                <article class = "card">
+                    <h3><%= critique.title %></h3>
+                    <p>
+                        <strong>Movie:</strong>
+                        <a href = "/movie/<%= critique.movie_id %>"><%= critique.movie_title %></a>
+                    </p>
+                    <p><strong>Author:</strong> <%= critique.author %></p>
+                    <p><%= critique.content %></p>
+                    <p class = "muted">
+                        <strong>Created:</strong> <%= critique.created_at %>
+                    </p>
+                </article>
+            <% }); %>
+        </div>
+    <% } %>
+</section>
+
+<%- include('partials/footer') %>

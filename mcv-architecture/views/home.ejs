@@ -1,0 +1,103 @@
+<%- include('partials/header', { title: 'Home - Movie Database' }) %>
+
+<!-- Movie search / filter section -->
+<section class = "page-section">
+    <h2>Browse Movies</h2>
+
+    <form method = "GET" action = "/" class = "filter-form">
+        <div class = "form-row">
+            <div class = "form-group">
+                <label for = "search">Search Title</label>
+                <input
+                    type = "text"
+                    id = "search"
+                    name = "search"
+                    value = "<%= filters && filters.search ? filters.search : '' %>"
+                    placeholder = "Enter movie title"
+                />
+            </div>
+
+            <div class = "form-group">
+                <label for = "genre">Genre</label>
+                <input
+                    type = "text"
+                    id = "genre"
+                    name = "genre"
+                    value = "<%= filters && filters.genre ? filters.genre : '' %>"
+                    placeholder = "e.g. Sci-Fi"
+                />
+            </div>
+
+            <div class = "form-group">
+                <label for = "year">Year</label>
+                <input
+                    type = "number"
+                    id = "year"
+                    name = "year"
+                    value = "<%= filters && filters.year ? filters.year : '' %>"
+                    placeholder = "e.g. 2010"
+                />
+            </div>
+        </div>
+
+        <div class = "form-row">
+            <div class = "form-group">
+                <label for = "sort">Sort By</label>
+                <select id = "sort" name = "sort">
+                    <option value = "title" <%= !filters || !filters.sort || filters.sort === 'title' ? 'selected' : '' %>>
+                        Title
+                    </option>
+                    <option value = "year" <%= filters && filters.sort === 'year' ? 'selected' : '' %>>
+                        Year
+                    </option>
+                    <option value = "genre" <%= filters && filters.sort === 'genre' ? 'selected' : '' %>>
+                        Genre
+                    </option>
+                </select>
+            </div>
+
+            <div class = "form-group">
+                <label for = "order">Order</label>
+                <select id = "order" name = "order">
+                    <option value = "ASC" <%= !filters || !filters.order || filters.order === 'ASC' ? 'selected' : '' %>>
+                        Ascending
+                    </option>
+                    <option value = "DESC" <%= filters && filters.order === 'DESC' ? 'selected' : '' %>>
+                        Descending
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div class = "button-row">
+            <button type = "submit" class = "btn">Apply Filters</button>
+            <a href = "/" class = "btn btn-secondary">Reset</a>
+        </div>
+    </form>
+</section>
+
+<!-- Movie list section -->
+<section class = "page-section">
+    <h2>Movie List</h2>
+
+    <% if (!movies || movies.length === 0) { %>
+        <div class = "empty-state">
+            <p>No movies found.</p>
+        </div>
+    <% } else { %>
+        <div class = "card-grid">
+            <% movies.forEach(function (movie) { %>
+                <article class = "card">
+                    <h3><%= movie.title %></h3>
+                    <p><strong>Year:</strong> <%= movie.year || 'N/A' %></p>
+                    <p><strong>Genre:</strong> <%= movie.genre || 'N/A' %></p>
+                    <p>
+                        <a class = "btn btn-small" href = "/movie/<%= movie.id %>">View Details</a>
+                    </p>
+                </article>
+            <% }); %>
+        </div>
+    <% } %>
+</section>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,283 @@
+
+*
+{
+    box-sizing: border-box;
+}
+
+body
+{
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f4f4;
+    color: #222;
+    line-height: 1.5;
+}
+
+a
+{
+    color: #1d4ed8;
+    text-decoration: none;
+}
+
+a:hover
+{
+    text-decoration: underline;
+}
+
+/* Container used to center content on the page */
+.container
+{
+    width: min(1100px, 92%);
+    margin: 0 auto;
+}
+
+
+/* Header / Navigation */
+
+.site-header
+{
+    background: #111827;
+    color: white;
+    padding: 1rem 0;
+}
+
+.header-inner
+{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.site-title
+{
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.site-title a
+{
+    color: white;
+    text-decoration: none;
+}
+
+.site-nav
+{
+    display: flex;
+    gap: 1rem;
+}
+
+.site-nav a
+{
+    color: white;
+    font-weight: bold;
+}
+
+
+/* Main Layout */
+
+.main-content
+{
+    padding: 2rem 0;
+    min-height: 80vh;
+}
+
+.site-footer
+{
+    background: #111827;
+    color: white;
+    text-align: center;
+    padding: 1rem 0;
+}
+
+
+/* Page Sections; Used for major blocks of content */
+
+.page-section
+{
+    background: white;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+
+/* Forms */
+
+.filter-form
+{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-row
+{
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.form-group
+{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 200px;
+}
+
+label
+{
+    font-weight: bold;
+    margin-bottom: 0.4rem;
+}
+
+input,
+select,
+textarea,
+button
+{
+    font: inherit;
+}
+
+input,
+select,
+textarea
+{
+    padding: 0.7rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: white;
+}
+
+textarea
+{
+    resize: vertical;
+}
+
+
+/* Buttons */
+
+.button-row
+{
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.btn
+{
+    display: inline-block;
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.btn:hover
+{
+    background: #1d4ed8;
+    text-decoration: none;
+}
+
+.btn-secondary
+{
+    background: #6b7280;
+}
+
+.btn-secondary:hover
+{
+    background: #4b5563;
+}
+
+.btn-small
+{
+    padding: 0.5rem 0.85rem;
+    font-size: 0.9rem;
+}
+
+
+/* Card Layout (used for movies and critiques) */
+
+.card-grid
+{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.card,
+.detail-card
+{
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 1rem;
+    background: #fafafa;
+}
+
+.stack
+{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+
+/* Lists */
+
+.list-box
+{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.list-box li
+{
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.list-box li:last-child
+{
+    border-bottom: none;
+}
+
+
+/* Miscellaneous */
+
+.empty-state
+{
+    padding: 1rem;
+    border: 1px dashed #bbb;
+    border-radius: 8px;
+    background: #fafafa;
+}
+
+.muted
+{
+    color: #666;
+    font-size: 0.95rem;
+}
+
+
+/* Responsive adjustments */
+
+@media (max-width: 700px)
+{
+    .header-inner
+    {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .site-nav
+    {
+        flex-wrap: wrap;
+    }
+}
