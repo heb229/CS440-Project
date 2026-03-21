@@ -1,26 +1,14 @@
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient
-  (
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
-  )
-
-export default async function handler(req, res) 
-  {
-  const { data, error } = await supabase
-    .from('items')
-    .select('*')
-    .order('id')
-
-  if (error) 
-    {
-    res.status(500).json(
-      { 
-        error: error.message 
-      })
-    return
+// Items API - Django backend
+export async function getItems() {
+  try {
+    const response = await fetch("/api/items/");
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-  res.status(200).json(data)
+    const items = await response.json();
+    return items;
+  } catch (err) {
+    console.error("Error fetching items:", err);
+    throw err;
   }
-
+}

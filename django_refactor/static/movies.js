@@ -1,69 +1,38 @@
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY,
-);
-
-export default async function movies_handler(req, res) {
-  const {
-    search,
-    genre,
-    mode = "or",
-    sort = "title",
-    order = "asc",
-    year,
-    decade,
-  } = req.query;
-
+// Movies API - Django backend
+export async function getMovies(filters = {}) {
   try {
-    let query = supabase.from("movies").select("*");
+    const url = new URL("/api/movies/", window.location.origin);
 
-    // partial title search
-    if (search) query = query.ilike("title", `%${search}%`);
+    if (filters.search) url.searchParams.append("search", filters.search);
+    if (filters.genre) url.searchParams.append("genre", filters.genre);
+    if (filters.mode) url.searchParams.append("mode", filters.mode);
+    if (filters.sort) url.searchParams.append("sort", filters.sort);
+    if (filters.order) url.searchParams.append("order", filters.order);
+    if (filters.year) url.searchParams.append("year", filters.year);
+    if (filters.decade) url.searchParams.append("decade", filters.decade);
 
-    // multi-genre filter
-    if (genre) {
-      const genres = genre.split(",").map((g) => g.trim());
-
-      if (genres.length > 0) {
-        if (mode === "or") {
-          // OR: match any genre
-          const conditions = genres.map((g) => `genre.ilike.%${g}%`).join(",");
-          query = query.or(conditions);
-        } else {
-          // AND: must match all selected genres
-          genres.forEach((g) => {
-            query = query.ilike("genre", `%${g}%`);
-          });
-        }
-      }
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-
-    // Year filter
-    if (year) query = query.eq("year", parseInt(year));
-
-    // Decade filter
-    if (decade) {
-      const start = parseInt(decade);
-      query = query.gte("year", start).lt("year", start + 10);
-    }
-
-    // Sorting
-    const ascending = order.toLowerCase() === "asc";
-    query = query.order(sort, { ascending });
-
-    const { data, error } = await query;
-    if (error)
-      return res.status(500).json({
-        error: error.message,
-      });
-
-    res.status(200).json(data);
+    const movies = await response.json();
+    return movies;
   } catch (err) {
-    console.error("API error:", err);
-    res.status(500).json({
-      error: err.message,
-    });
+    console.error("Error fetching movies:", err);
+    throw err;
+  }
+}
+
+export async function getMovieDetail(movieId) {
+  try {
+    const response = await fetch(`/api/movies/${movieId}/`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const movie = await response.json();
+    return movie;
+  } catch (err) {
+    console.error("Error fetching movie:", err);
+    throw err;
   }
 }

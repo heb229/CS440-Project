@@ -1,79 +1,62 @@
-import { createClient } from "@supabase/supabase-js";
+// Critiques API - Django backend
+export async function getCritiques(movieId = null) {
+  try {
+    const url = new URL("/api/critiques/", window.location.origin);
+    if (movieId) {
+      url.searchParams.append("movie_id", movieId);
+    }
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY,
-);
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const critiques = await response.json();
+    return critiques;
+  } catch (err) {
+    console.error("Error fetching critiques:", err);
+    throw err;
+  }
+}
 
-export default async function movie_critiques_handler(req, res) {
-  if (req.method === "GET") {
-    const { movie_id } = req.query;
+export async function createCritique(movieId, title, author, content) {
+  try {
+    const response = await fetch("/api/critiques/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCookie("csrftoken"),
+      },
+      body: JSON.stringify({
+        movie_id: movieId,
+        title,
+        author,
+        content,
+      }),
+    });
 
-    try {
-      // select critiques and include movie title
-      let query = supabase.from("movie_critiques").select(`
-          *,
-          movies!inner(title)
-        `); // assumes foreign key is set up in Supabase
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const critique = await response.json();
+    return critique;
+  } catch (err) {
+    console.error("Error creating critique:", err);
+    throw err;
+  }
+}
 
-      if (movie_id) {
-        query = query.eq("movie_id", movie_id);
+// Helper function to get CSRF token from cookies
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === name + "=") {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
       }
-
-      query = query.order("created_at", { ascending: false });
-
-      const { data, error } = await query;
-      if (error)
-        return res.status(500).json({
-          error: error.message,
-        });
-
-      // map for frontend use
-      const critiques = data.map((c) => ({
-        id: c.id,
-        movie_id: c.movie_id,
-        movie_title: c.movies.title,
-        title: c.title,
-        author: c.author,
-        content: c.content,
-        created_at: c.created_at,
-      }));
-
-      return res.status(200).json(critiques);
-    } catch (err) {
-      console.error("API error:", err);
-      return res.status(500).json({ error: err.message });
     }
   }
-
-  if (req.method === "POST") {
-    const { movie_id, title, author, content } = req.body;
-    if (!movie_id || !title || !author || !content) {
-      return res.status(400).json({
-        error: "All fields are required",
-      });
-    }
-
-    const { data, error } = await supabase
-      .from("movie_critiques")
-      .insert([
-        {
-          movie_id,
-          title,
-          author,
-          content,
-        },
-      ])
-      .select();
-
-    if (error)
-      return res.status(500).json({
-        error: error.message,
-      });
-    return res.status(201).json(data[0]);
-  }
-
-  res.status(405).json({
-    error: "Method not allowed",
-  });
+  return cookieValue;
 }
