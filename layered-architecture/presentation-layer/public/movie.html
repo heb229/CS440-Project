@@ -1,0 +1,25 @@
+<nav>
+  <a href="index.html">Home</a>
+  <a href="movie_critiques.html">Critiques</a>
+</nav>
+
+<h1 id="title"></h1>
+<p id="director"></p>
+<p id="synopsis"></p>
+
+<h3>Cast</h3>
+<ul id="cast"></ul>
+
+<h3>Critiques</h3>
+<ul id="critiques"></ul> <!-- existing list -->
+
+<!-- New: Submit Critique Form -->
+<h3>Submit a Critique</h3>
+<form id="critique-form">
+  <input type="text" id="critique-title" placeholder="Title" required /><br><br>
+  <input type="text" id="critique-author" placeholder="Your Name" required /><br><br>
+  <textarea id="critique-content" placeholder="Your critique…" required></textarea><br><br>
+  <button type="submit">Submit</button>
+</form>
+
+<script src="./js/movie.js"></script>

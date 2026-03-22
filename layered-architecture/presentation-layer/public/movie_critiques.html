@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Movie Critiques</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="index.html">Movie Catalog</a>
+        <div class="navbar-nav">
+          <a class="nav-link" href="index.html">Home</a>
+          <a class="nav-link active" href="movie_critiques.html">Critiques</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="container py-4">
+      <h1 class="mb-4">All Movie Critiques</h1>
+
+      <ul id="critiques" class="list-group"></ul>
+    </main>
+
+    <!-- Bootstrap JS (bundle includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Fetch critiques -->
+    <script src="./js/movie_critiques.js"></script>
+  </body>
+</html>
