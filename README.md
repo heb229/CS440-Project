@@ -22,25 +22,31 @@ You must have these installed
 - SQLite3
 
 You can check with 
+
 `python -m django --version`
 
 # Setup Instructions
 
 Clone the repository
+
 `git clone https://github.com/heb229/CS440-Project.git`
 
 Then navigate to the branch 
+
 `git checkout refactor-django`
 
 Create the python virtual enviornment
+
 `python -m venv venv`
 
 CD into the folder django_refactor (make sure to do this after the venv is created)
+
 `cd django_refactor`
 
 # Running the server
 
 Run the server with
+
 `python manage.py runserver`
 
 # Opening the website
@@ -50,6 +56,7 @@ Click on the link that runs locally on your computer when executing the above st
 # To access database
 
 You can view any stored information
+
 `python manage.py shell`
 
 
