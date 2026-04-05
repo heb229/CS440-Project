@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Person Details</title>
+  </head>
+  <body>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="movie_critiques.html">Critiques</a>
+    </nav>
+
+    <h1 id="name">Loading...</h1>
+    <p id="role"></p>
+    <p id="bio"></p>
+
+    <h3>Movies They Acted In</h3>
+    <ul id="acted-movies"></ul>
+
+    <h3>Movies They Directed</h3>
+    <ul id="directed-movies"></ul>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const personIdFromQuery = params.get('id');
+      const storedPersonId = window.localStorage.getItem('selectedPersonId');
+      const personId = personIdFromQuery || storedPersonId;
+
+      const nameEl = document.getElementById('name');
+      const roleEl = document.getElementById('role');
+      const bioEl = document.getElementById('bio');
+      const actedMoviesList = document.getElementById('acted-movies');
+      const directedMoviesList = document.getElementById('directed-movies');
+
+      function rememberSelectedMovie(movieId) {
+        window.localStorage.setItem('selectedMovieId', String(movieId));
+      }
+
+      function createMovieLink(movie) {
+        const link = document.createElement('a');
+        link.href = `./movie.html?id=${encodeURIComponent(movie.id)}`;
+        link.textContent = `${movie.title} (${movie.year})`;
+        link.addEventListener('click', () => rememberSelectedMovie(movie.id));
+        return link;
+      }
+
+      function renderMovieList(listElement, movies, emptyMessage) {
+        listElement.innerHTML = '';
+
+        if (!Array.isArray(movies) || movies.length === 0) {
+          listElement.innerHTML = `<li>${emptyMessage}</li>`;
+          return;
+        }
+
+        movies.forEach((movie) => {
+          const listItem = document.createElement('li');
+          listItem.appendChild(createMovieLink(movie));
+          listElement.appendChild(listItem);
+        });
+      }
+
+      async function loadPerson() {
+        if (!personId) {
+          nameEl.textContent = 'Person not found';
+          bioEl.textContent = 'Missing person id in the URL.';
+          return;
+        }
+
+        try {
+          const response = await fetch(`http://localhost:3000/person/${encodeURIComponent(personId)}`);
+          const person = await response.json();
+
+          if (!response.ok) {
+            throw new Error(person.error || 'Unable to load person');
+          }
+
+          window.localStorage.setItem('selectedPersonId', String(person.id));
+          nameEl.textContent = person.name;
+          roleEl.textContent = person.role ? `Role: ${person.role}` : '';
+          bioEl.textContent = person.bio || 'No bio available.';
+
+          renderMovieList(actedMoviesList, person.actedMovies, 'No acting credits listed.');
+          renderMovieList(directedMoviesList, person.directedMovies, 'No directing credits listed.');
+        } catch (err) {
+          nameEl.textContent = 'Error loading person';
+          roleEl.textContent = '';
+          bioEl.textContent = err.message;
+          actedMoviesList.innerHTML = '<li>Unable to load acting credits.</li>';
+          directedMoviesList.innerHTML = '<li>Unable to load directing credits.</li>';
+        }
+      }
+
+      loadPerson();
+    </script>
+  </body>
+</html>

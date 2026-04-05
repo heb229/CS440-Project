@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "3000:3000"
+    depends_on:
+      - movie-service
+      - person-service
+      - critique-service
+
+  movie-service:
+    build: ./movie-service
+    ports:
+      - "3001:3001"
+    volumes:
+      - movie_data:/app
+
+  person-service:
+    build: ./person-service
+    ports:
+      - "3002:3002"
+    volumes:
+      - person_data:/app
+
+  critique-service:
+    build: ./critique-service
+    ports:
+      - "3003:3003"
+    volumes:
+      - critique_data:/app
+
+volumes:
+  movie_data:
+  person_data:
+  critique_data:

@@ -1,0 +1,2 @@
+(inside api gateway folder) npm install cors http-proxy-middleware
+npx serve .

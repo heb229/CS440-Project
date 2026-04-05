@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Movie Details</title>
+  </head>
+  <body>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="movie_critiques.html">Critiques</a>
+    </nav>
+
+    <h1 id="title">Loading...</h1>
+    <p id="details"></p>
+    <p id="director"></p>
+    <p id="synopsis"></p>
+
+    <h3>Cast</h3>
+    <ul id="cast"></ul>
+
+    <h3>Critiques</h3>
+    <ul id="critiques"></ul>
+
+    <h3>Submit a Critique</h3>
+    <form id="critique-form">
+      <input type="text" id="critique-title" placeholder="Title" required /><br /><br />
+      <input type="text" id="critique-author" placeholder="Your Name" required /><br /><br />
+      <textarea id="critique-content" placeholder="Your critique..." required></textarea><br /><br />
+      <button type="submit">Submit</button>
+    </form>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const movieIdFromQuery = params.get('id');
+      const storedMovieId = window.localStorage.getItem('selectedMovieId');
+      const movieId = movieIdFromQuery || storedMovieId;
+
+      const titleEl = document.getElementById('title');
+      const detailsEl = document.getElementById('details');
+      const directorEl = document.getElementById('director');
+      const synopsisEl = document.getElementById('synopsis');
+      const castList = document.getElementById('cast');
+      const critiquesList = document.getElementById('critiques');
+
+      const form = document.getElementById('critique-form');
+      const titleInput = document.getElementById('critique-title');
+      const authorInput = document.getElementById('critique-author');
+      const contentInput = document.getElementById('critique-content');
+
+      function rememberSelectedPerson(personId) {
+        window.localStorage.setItem('selectedPersonId', String(personId));
+      }
+
+      function createPersonLink(person) {
+        const link = document.createElement('a');
+        link.href = `./person.html?id=${encodeURIComponent(person.id)}`;
+        link.textContent = person.name;
+        link.addEventListener('click', () => rememberSelectedPerson(person.id));
+        return link;
+      }
+
+      function renderCritiques(critiques) {
+        critiquesList.innerHTML = '';
+
+        if (!Array.isArray(critiques) || critiques.length === 0) {
+          critiquesList.innerHTML = '<li>No critiques available.</li>';
+          return;
+        }
+
+        critiques.forEach((critique) => {
+          const listItem = document.createElement('li');
+          listItem.innerHTML = `
+            <strong>${critique.title}</strong> by ${critique.author}
+            (${new Date(critique.created_at).toLocaleDateString()})
+            <p>${critique.content}</p>
+          `;
+          critiquesList.appendChild(listItem);
+        });
+      }
+
+      function renderCast(cast) {
+        castList.innerHTML = '';
+
+        if (!Array.isArray(cast) || cast.length === 0) {
+          castList.innerHTML = '<li>No cast listed.</li>';
+          return;
+        }
+
+        cast.forEach((person) => {
+          const listItem = document.createElement('li');
+          listItem.appendChild(createPersonLink(person));
+          castList.appendChild(listItem);
+        });
+      }
+
+      function renderDirector(director) {
+        if (!director) {
+          directorEl.textContent = 'Director: Unknown';
+          return;
+        }
+
+        directorEl.innerHTML = '';
+        directorEl.appendChild(document.createTextNode('Director: '));
+        directorEl.appendChild(createPersonLink(director));
+      }
+
+      async function loadMovie() {
+        if (!movieId) {
+          titleEl.textContent = 'Movie not found';
+          detailsEl.textContent = 'Missing movie id in the URL.';
+          return;
+        }
+
+        try {
+          const response = await fetch(`http://localhost:3000/movie-full/${encodeURIComponent(movieId)}`);
+          const movie = await response.json();
+
+          if (!response.ok) {
+            throw new Error(movie.error || 'Unable to load movie');
+          }
+
+          titleEl.textContent = movie.title;
+          window.localStorage.setItem('selectedMovieId', String(movie.id));
+          detailsEl.textContent = `${movie.year} | ${movie.genre} | ${movie.runtime} min | Rating: ${movie.rating}`;
+          synopsisEl.textContent = movie.synopsis || 'No synopsis available.';
+
+          renderDirector(movie.director);
+          renderCast(movie.cast);
+          renderCritiques(movie.critiques);
+        } catch (err) {
+          titleEl.textContent = 'Error loading movie';
+          detailsEl.textContent = err.message;
+          directorEl.textContent = '';
+          synopsisEl.textContent = '';
+          castList.innerHTML = '<li>Unable to load cast.</li>';
+          critiquesList.innerHTML = '<li>Unable to load critiques.</li>';
+        }
+      }
+
+      form.onsubmit = async (event) => {
+        event.preventDefault();
+
+        const payload = {
+          movie_id: movieId,
+          title: titleInput.value,
+          author: authorInput.value,
+          content: contentInput.value
+        };
+
+        const response = await fetch('http://localhost:3000/critiques', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          alert(`Error: ${data.error}`);
+          return;
+        }
+
+        titleInput.value = '';
+        authorInput.value = '';
+        contentInput.value = '';
+        await loadMovie();
+      };
+
+      loadMovie();
+    </script>
+  </body>
+</html>
