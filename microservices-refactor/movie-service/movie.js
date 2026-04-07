@@ -3,6 +3,8 @@ export default function movieRoutes(app, db) {
     const movieId = req.params.id;
 
     try {
+      // A movie response includes related people so the client can render
+      // a complete details page without additional joins.
       const movie = await db.get('SELECT * FROM movies WHERE id = ?', [movieId]);
 
       if (!movie) {
@@ -25,7 +27,8 @@ export default function movieRoutes(app, db) {
         director,
         cast
       });
-    } catch (err) {
+    } 
+    catch (err) {
       res.status(500).json({ error: err.message });
     }
   });

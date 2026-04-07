@@ -1,5 +1,5 @@
-export default function personRoutes(app, db) {
-  app.get('/person/:id', async (req, res) => {
+function registerPersonDetailsRoute(app, db, path) {
+  app.get(path, async (req, res) => {
     const personId = req.params.id;
 
     try {
@@ -22,15 +22,24 @@ export default function personRoutes(app, db) {
         [personId]
       );
 
-      res.json({
+      return res.json({
         ...person,
         actedMovies,
         directedMovies
       });
-    } catch (err) {
-      res.status(500).json({ error: err.message });
+    } 
+    catch (err) {
+      return res.status(500).json({ error: err.message });
     }
   });
+}
+
+export default function personRoutes(app, db) {
+  // Preferred RESTful endpoint.
+  registerPersonDetailsRoute(app, db, '/people/:id');
+
+  // Legacy alias preserved so older links still resolve.
+  registerPersonDetailsRoute(app, db, '/person/:id');
 
   app.get('/people', async (req, res) => {
     try {
@@ -45,9 +54,10 @@ export default function personRoutes(app, db) {
       const placeholders = personIds.map(() => '?').join(',');
       const people = await db.all(`SELECT * FROM people WHERE id IN (${placeholders})`, personIds);
 
-      res.json(people);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
+      return res.json(people);
+    } 
+    catch (err) {
+      return res.status(500).json({ error: err.message });
     }
   });
 }

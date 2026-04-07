@@ -1,2 +1,6 @@
 (inside api gateway folder) npm install cors http-proxy-middleware
+docker compose up --build
+cd frontend
 npx serve .
+
+docker compose down -v

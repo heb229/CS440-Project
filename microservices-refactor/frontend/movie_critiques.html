@@ -59,7 +59,7 @@
 
               <div class="mt-2">
                 Movie:
-                <a href="movie.html?id=${c.movie_id}">
+                <a href="./movie.html?id=${c.movie_id}" onclick="localStorage.setItem('selectedMovieId', '${c.movie_id}')">
                   ${c.movie_title || "Movie #" + c.movie_id}
                 </a>
               </div>

@@ -11,6 +11,7 @@ export default function moviesRoutes(app, db) {
     } = req.query;
 
     try {
+      // Build the query incrementally so each optional filter stays easy to follow.
       let query = 'SELECT * FROM movies WHERE 1=1';
       const params = [];
 
@@ -28,7 +29,8 @@ export default function moviesRoutes(app, db) {
           selectedGenres.forEach((selectedGenre) => {
             params.push(`%${selectedGenre}%`);
           });
-        } else {
+        } 
+        else {
           selectedGenres.forEach((selectedGenre) => {
             query += ' AND genre LIKE ?';
             params.push(`%${selectedGenre}%`);
@@ -51,7 +53,8 @@ export default function moviesRoutes(app, db) {
 
       const movies = await db.all(query, params);
       res.json(movies);
-    } catch (err) {
+    } 
+    catch (err) {
       res.status(500).json({ error: err.message });
     }
   });

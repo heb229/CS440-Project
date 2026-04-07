@@ -12,13 +12,14 @@ const PORT = 3002;
 
 async function start() {
   const db = await initDB();
+
+  // Seed the local read model used by the people service.
   await seedPeople(db);
 
   personRoutes(app, db);
 
-
   app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Person service running on ${PORT}`);
+    console.log(`Person service running on ${PORT}`);
   });
 }
 

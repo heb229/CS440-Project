@@ -113,7 +113,7 @@
         }
 
         try {
-          const response = await fetch(`http://localhost:3000/movie-full/${encodeURIComponent(movieId)}`);
+          const response = await fetch(`http://localhost:3000/movies/${encodeURIComponent(movieId)}/details`);
           const movie = await response.json();
 
           if (!response.ok) {
@@ -128,7 +128,8 @@
           renderDirector(movie.director);
           renderCast(movie.cast);
           renderCritiques(movie.critiques);
-        } catch (err) {
+        } 
+        catch (err) {
           titleEl.textContent = 'Error loading movie';
           detailsEl.textContent = err.message;
           directorEl.textContent = '';

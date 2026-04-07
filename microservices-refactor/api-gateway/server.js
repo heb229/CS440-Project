@@ -16,11 +16,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/movies', createProxyMiddleware({ target: movieServiceUrl, changeOrigin: true }));
-app.use('/person', createProxyMiddleware({ target: personServiceUrl, changeOrigin: true }));
-app.use('/critiques', createProxyMiddleware({ target: critiqueServiceUrl, changeOrigin: true }));
-app.use('/stats', createProxyMiddleware({ target: critiqueServiceUrl, changeOrigin: true }));
-
 async function fetchJson(url) {
   const response = await fetch(url);
   const data = await response.json();
@@ -32,7 +27,9 @@ async function fetchJson(url) {
   };
 }
 
-app.get('/movie-full/:id', async (req, res) => {
+// The gateway exposes a read-optimized movie details route so the frontend
+// does not need to manually coordinate multiple service calls.
+async function getMovieDetails(req, res) {
   try {
     const movieId = req.params.id;
 
@@ -41,19 +38,31 @@ app.get('/movie-full/:id', async (req, res) => {
       return res.status(movieResult.status).json(movieResult.data);
     }
 
-    const critiqueResult = await fetchJson(`${critiqueServiceUrl}/critiques/movie/${movieId}`);
+    const critiqueResult = await fetchJson(`${critiqueServiceUrl}/movies/${movieId}/critiques`);
     if (!critiqueResult.ok) {
       return res.status(critiqueResult.status).json(critiqueResult.data);
     }
 
-    res.json({
+    return res.json({
       ...movieResult.data,
       critiques: critiqueResult.data
     });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } 
+  catch (err) {
+    return res.status(500).json({ error: err.message });
   }
-});
+}
+
+// RESTful routes.
+app.get('/movies/:id/details', getMovieDetails);
+app.use('/movies', createProxyMiddleware({ target: movieServiceUrl, changeOrigin: true }));
+app.use('/people', createProxyMiddleware({ target: personServiceUrl, changeOrigin: true }));
+app.use('/critiques', createProxyMiddleware({ target: critiqueServiceUrl, changeOrigin: true }));
+
+// Legacy aliases kept temporarily so older frontend links still work.
+app.get('/movie-full/:id', getMovieDetails);
+app.use('/person', createProxyMiddleware({ target: personServiceUrl, changeOrigin: true }));
+app.use('/stats', createProxyMiddleware({ target: critiqueServiceUrl, changeOrigin: true }));
 
 app.get('/', (req, res) => {
   res.send('API Gateway is running');

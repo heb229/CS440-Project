@@ -68,7 +68,7 @@
         }
 
         try {
-          const response = await fetch(`http://localhost:3000/person/${encodeURIComponent(personId)}`);
+          const response = await fetch(`http://localhost:3000/people/${encodeURIComponent(personId)}`);
           const person = await response.json();
 
           if (!response.ok) {
@@ -82,7 +82,8 @@
 
           renderMovieList(actedMoviesList, person.actedMovies, 'No acting credits listed.');
           renderMovieList(directedMoviesList, person.directedMovies, 'No directing credits listed.');
-        } catch (err) {
+        } 
+        catch (err) {
           nameEl.textContent = 'Error loading person';
           roleEl.textContent = '';
           bioEl.textContent = err.message;

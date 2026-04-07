@@ -15,12 +15,30 @@ export default function critiquesRoutes(app, db) {
       query += ' ORDER BY c.created_at DESC';
 
       const critiques = await db.all(query, params);
-      res.json(critiques);
+      return res.json(critiques);
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      return res.status(500).json({ error: err.message });
     }
   });
 
+  // Critiques belong to a movie, so this subresource path is the primary RESTful route.
+  app.get('/movies/:movieId/critiques', async (req, res) => {
+    try {
+      const critiques = await db.all(
+        `SELECT c.*, m.title as movie_title FROM movie_critiques c
+         LEFT JOIN movies m ON c.movie_id = m.id
+         WHERE c.movie_id = ? ORDER BY c.created_at DESC`,
+        [req.params.movieId]
+      );
+
+      return res.json(critiques);
+    } 
+    catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Legacy alias preserved for compatibility with older gateway code.
   app.get('/critiques/movie/:movieId', async (req, res) => {
     try {
       const critiques = await db.all(
@@ -30,9 +48,10 @@ export default function critiquesRoutes(app, db) {
         [req.params.movieId]
       );
 
-      res.json(critiques);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
+      return res.json(critiques);
+    } 
+    catch (err) {
+      return res.status(500).json({ error: err.message });
     }
   });
 
@@ -56,7 +75,7 @@ export default function critiquesRoutes(app, db) {
         [movie_id, title, author, content]
       );
 
-      res.status(201).json({
+      return res.status(201).json({
         id: result.lastID,
         movie_id,
         movie_title: movie.title,
@@ -64,8 +83,9 @@ export default function critiquesRoutes(app, db) {
         author,
         content
       });
-    } catch (err) {
-      res.status(500).json({ error: err.message });
+    } 
+    catch (err) {
+      return res.status(500).json({ error: err.message });
     }
   });
 }

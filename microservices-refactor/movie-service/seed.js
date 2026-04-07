@@ -68,7 +68,8 @@ export async function seedMovies(db) {
     }
 
     await db.exec('COMMIT');
-  } catch (err) {
+  } 
+  catch (err) {
     await db.exec('ROLLBACK');
     throw err;
   }
