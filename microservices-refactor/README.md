@@ -111,7 +111,7 @@ This starts:
 
 You should see something like this:
 
-![Docker Build](microservices-refactor/readme-images/buildup.png)
+![Docker Build](readme-images/buildup.png)
 
 ### 3. Start the frontend
 
@@ -124,7 +124,7 @@ npx serve .
 
 `serve` will print the frontend URL in the terminal. Copy the local host link into your browser to access the locally hosted website. You should see something like:
 
-![Website Served](microservices-refactor/readme-images/serve.png)
+![Website Served](readme-images/serve.png)
 
 ### 4. Open the app
 
@@ -132,7 +132,7 @@ Open the frontend URL from the `npx serve` output in your browser. Because we ha
 
 The homepage you see should look like:
 
-![Homepage](microservices-refactor/readme-images/webhomepage.png)
+![Homepage](readme-images/webhomepage.png)
 
 ## Reset the Seeded Databases
 
