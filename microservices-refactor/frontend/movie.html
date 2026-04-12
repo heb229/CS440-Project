@@ -11,11 +11,14 @@
       <a href="movie_critiques.html">Critiques</a>
     </nav>
 
+    <!-- The main content of the page includes the movie title, details (year, genre, runtime, rating), director, synopsis, cast list, critiques list, and a form to submit a new critique. -->
     <h1 id="title">Loading...</h1>
     <p id="details"></p>
     <p id="director"></p>
     <p id="synopsis"></p>
 
+    <!-- The cast list is displayed as an unordered list, and the critiques are also displayed as an unordered list. 
+         The critique submission form includes fields for the critique title, author name, and content, along with a submit button. -->
     <h3>Cast</h3>
     <ul id="cast"></ul>
 
@@ -30,7 +33,11 @@
       <button type="submit">Submit</button>
     </form>
 
+    <!-- The JavaScript code at the end of the body handles fetching the movie details and critiques from the 
+     backend, rendering them on the page, and submitting new critiques to the backend. -->
     <script>
+      // The code retrieves the movie ID from the URL query parameters or from local storage, and then defines functions 
+      // to render the movie details, cast, and critiques on the page.
       const params = new URLSearchParams(window.location.search);
       const movieIdFromQuery = params.get('id');
       const storedMovieId = window.localStorage.getItem('selectedMovieId');
@@ -48,10 +55,15 @@
       const authorInput = document.getElementById('critique-author');
       const contentInput = document.getElementById('critique-content');
 
+      // The rememberSelectedPerson function is used to store the ID of a selected person 
+      // (e.g., director or cast member) in local storage, so that when the user clicks on a 
+      // person's name, their ID is saved and can be used to load their details on the person.html page.
       function rememberSelectedPerson(personId) {
         window.localStorage.setItem('selectedPersonId', String(personId));
       }
 
+      // The createPersonLink function creates a hyperlink element for a given person object, 
+      // which includes the person's name and a link to their details page.
       function createPersonLink(person) {
         const link = document.createElement('a');
         link.href = `./person.html?id=${encodeURIComponent(person.id)}`;
@@ -60,33 +72,42 @@
         return link;
       }
 
+      // The renderCritiques function takes an array of critiques and renders them as list items in the critiques list.
       function renderCritiques(critiques) {
         critiquesList.innerHTML = '';
 
+        // If there are no critiques, display a message indicating that no critiques are available.
         if (!Array.isArray(critiques) || critiques.length === 0) {
           critiquesList.innerHTML = '<li>No critiques available.</li>';
           return;
         }
 
+        // If there are critiques, iterate through the list of critiques and create a list item for each critique,
+        // displaying the title, author, creation date, and content of the critique.
         critiques.forEach((critique) => {
+          // Create a list item for each critique, displaying the title, author, creation date, and content of the critique
           const listItem = document.createElement('li');
           listItem.innerHTML = `
             <strong>${critique.title}</strong> by ${critique.author}
             (${new Date(critique.created_at).toLocaleDateString()})
             <p>${critique.content}</p>
           `;
+          // Append the list item to the critiques list
           critiquesList.appendChild(listItem);
         });
       }
 
+      // The renderCast function takes an array of cast members and renders them as list items in the cast list.
       function renderCast(cast) {
         castList.innerHTML = '';
 
+        // If there are no cast members, display a message indicating that no cast is listed.
         if (!Array.isArray(cast) || cast.length === 0) {
           castList.innerHTML = '<li>No cast listed.</li>';
           return;
         }
 
+        // If there are cast members, iterate through the list of cast members and create a list item for each member,
         cast.forEach((person) => {
           const listItem = document.createElement('li');
           listItem.appendChild(createPersonLink(person));
@@ -94,17 +115,20 @@
         });
       }
 
+      // The renderDirector function takes a director object and renders it in the director element.
       function renderDirector(director) {
         if (!director) {
           directorEl.textContent = 'Director: Unknown';
           return;
         }
 
+        // If there is a director, clear the director element and append a link to the director's details page
         directorEl.innerHTML = '';
         directorEl.appendChild(document.createTextNode('Director: '));
         directorEl.appendChild(createPersonLink(director));
       }
 
+      // The loadMovie function is responsible for fetching the movie details from the backend and rendering them on the page.
       async function loadMovie() {
         if (!movieId) {
           titleEl.textContent = 'Movie not found';
@@ -112,10 +136,14 @@
           return;
         }
 
+        // The function makes a GET request to the backend to retrieve the movie details, including the title, 
+        // year, genre, runtime, rating, synopsis, director, cast, and critiques.
         try {
           const response = await fetch(`http://localhost:3000/movies/${encodeURIComponent(movieId)}/details`);
           const movie = await response.json();
 
+          // if no response, note that the movie could not be loaded. 
+          // If the response is not successful, throw an error with the message from the response or a default error message.
           if (!response.ok) {
             throw new Error(movie.error || 'Unable to load movie');
           }
@@ -125,10 +153,14 @@
           detailsEl.textContent = `${movie.year} | ${movie.genre} | ${movie.runtime} min | Rating: ${movie.rating}`;
           synopsisEl.textContent = movie.synopsis || 'No synopsis available.';
 
+          // Render the movie details
           renderDirector(movie.director);
           renderCast(movie.cast);
           renderCritiques(movie.critiques);
         } 
+
+        // catch any errors that occur during the fetch request or while processing the response, 
+        // log the error to the console, and update the page to indicate that there was an error loading the movie details.
         catch (err) {
           titleEl.textContent = 'Error loading movie';
           detailsEl.textContent = err.message;
@@ -139,9 +171,13 @@
         }
       }
 
+      // The form submission handler prevents the default form submission behavior, 
+      // constructs a payload with the critique details, and sends a POST request 
+      // to the backend to create a new critique for the movie.
       form.onsubmit = async (event) => {
         event.preventDefault();
 
+        // Construct the payload for the new critique, including the movie ID, title, author, and content from the form inputs
         const payload = {
           movie_id: movieId,
           title: titleInput.value,
@@ -149,25 +185,31 @@
           content: contentInput.value
         };
 
+        // Send a POST request to the backend to create a new critique for the movie, and await the response
         const response = await fetch('http://localhost:3000/critiques', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
 
+        // Await the response from the backend and parse it as JSON. If the response is not successful, 
+        // alert the user with the error message from the response or a default error message.
         const data = await response.json();
 
+        // If the response is not successful, alert the user with the error message from the response or a default error message
         if (!response.ok) {
           alert(`Error: ${data.error}`);
           return;
         }
 
+        // If the critique is successfully created, clear the form inputs and reload the movie details to show the new critique
         titleInput.value = '';
         authorInput.value = '';
         contentInput.value = '';
         await loadMovie();
       };
 
+      // Call the loadMovie function to fetch and display the movie details when the page loads
       loadMovie();
     </script>
   </body>

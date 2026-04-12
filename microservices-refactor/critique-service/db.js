@@ -1,12 +1,16 @@
+// imports 
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 
+// Initialize the SQLite database connection and create tables if they don't exist
 export async function initDB() {
   const db = await open({
     filename: './critiques.db',
     driver: sqlite3.Database
   });
 
+  // Enable foreign key constraints to ensure that critiques reference valid movies 
+  // and are deleted if the referenced movie is deleted
   await db.exec('PRAGMA foreign_keys = ON');
 
   // Create table if not exists
@@ -27,5 +31,6 @@ export async function initDB() {
     );
   `);
 
+  // return
   return db;
 }

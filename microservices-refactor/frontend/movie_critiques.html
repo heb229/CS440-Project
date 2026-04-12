@@ -41,6 +41,10 @@
         .then((critiques) => {
           const list = document.getElementById("critiques");
 
+          // If there are no critiques, display a message indicating that no critiques are available. 
+          // Otherwise, iterate through the list of critiques and create a list item for each critique, 
+          // displaying the title, author, creation date, associated movie (with a link to the movie page), 
+          // and the content of the critique.
           if (!critiques || critiques.length === 0) {
             list.innerHTML =
               '<li class="list-group-item">No critiques available.</li>';
@@ -70,6 +74,7 @@
             list.appendChild(li);
           });
         })
+        // If any error occurs while fetching the critiques, log the error to the console and display an error message in the critiques list.
         .catch((err) => {
           console.error("Error fetching critiques:", err);
           document.getElementById("critiques").innerHTML =

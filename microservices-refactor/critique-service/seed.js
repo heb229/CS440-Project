@@ -1,3 +1,4 @@
+// Sample data for movies and critiques
 const movies = [
   [1, 'Pulp Fiction'],
   [2, 'Inglourious Basterds'],
@@ -8,6 +9,7 @@ const movies = [
   [7, 'Dune']
 ];
 
+// Each critique references a movie by its movie_id, and includes a title, author, and content for the critique
 const critiques = [
   [1, 'Sharp and unforgettable', 'Alice', 'Pulp Fiction is sharp, funny, and endlessly rewatchable.'],
   [1, 'Iconic dialogue', 'Bob', 'The storytelling is unconventional, but every scene feels memorable.'],
@@ -19,15 +21,21 @@ const critiques = [
   [7, 'Huge and immersive', 'Farah', 'Dune feels epic without losing the emotional stakes.']
 ];
 
+// The seedCritiques function takes a database connection as an argument and populates 
+// the movies and movie_critiques tables with the sample data defined above
 export async function seedCritiques(db) {
   console.log('Syncing critiques...');
 
+  // Use a transaction to ensure that the seeding process is atomic. 
+  // If any error occurs, the transaction will be rolled back to maintain database integrity.
   await db.exec('BEGIN');
 
+  // First, delete existing data from the movie_critiques and movies tables to ensure a clean slate for seeding
   try {
     await db.run('DELETE FROM movie_critiques');
     await db.run('DELETE FROM movies');
 
+    // Insert the sample movies into the movies table
     for (const [id, title] of movies) {
       await db.run(
         'INSERT INTO movies (id, title) VALUES (?, ?)',
@@ -35,6 +43,7 @@ export async function seedCritiques(db) {
       );
     }
 
+    // Insert the sample critiques into the movie_critiques table, linking each critique to its corresponding movie by movie_id
     for (const [movieId, title, author, content] of critiques) {
       await db.run(
         `INSERT INTO movie_critiques (movie_id, title, author, content)
@@ -43,8 +52,12 @@ export async function seedCritiques(db) {
       );
     }
 
+    // If all inserts are successful, commit the transaction to save the changes to the database
     await db.exec('COMMIT');
-  } catch (err) {
+  }
+  
+  // If any error occurs during the seeding process, roll back the transaction to undo any changes and maintain database integrity
+  catch (err) {
     await db.exec('ROLLBACK');
     throw err;
   }

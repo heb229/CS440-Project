@@ -11,6 +11,7 @@
       <a href="movie_critiques.html">Critiques</a>
     </nav>
 
+    <!-- The main content of the page includes the person's name, role (e.g., actor, director), bio, and lists of movies they acted in and directed. -->
     <h1 id="name">Loading...</h1>
     <p id="role"></p>
     <p id="bio"></p>
@@ -21,7 +22,10 @@
     <h3>Movies They Directed</h3>
     <ul id="directed-movies"></ul>
 
+    <!-- The JavaScript code at the end of the body handles fetching the person's details from the backend, 
+     rendering them on the page, and creating links to the movies they were involved in. -->
     <script>
+      // The code retrieves the person ID from the URL query parameters or from local storage, and then defines functions
       const params = new URLSearchParams(window.location.search);
       const personIdFromQuery = params.get('id');
       const storedPersonId = window.localStorage.getItem('selectedPersonId');
@@ -33,10 +37,14 @@
       const actedMoviesList = document.getElementById('acted-movies');
       const directedMoviesList = document.getElementById('directed-movies');
 
+      // The rememberSelectedPerson function is used to store the ID of a selected person 
+      // (e.g., director or cast member) in local storage,
       function rememberSelectedMovie(movieId) {
         window.localStorage.setItem('selectedMovieId', String(movieId));
       }
 
+      // the createMovieLink function creates a link element for a given movie, 
+      // which navigates to the movie.html page with the movie ID as a query parameter when clicked.
       function createMovieLink(movie) {
         const link = document.createElement('a');
         link.href = `./movie.html?id=${encodeURIComponent(movie.id)}`;
@@ -45,14 +53,18 @@
         return link;
       }
 
+      // The renderMovieList function takes a list element, an array of movies, and an empty message as arguments. It clears the list element and checks if the movies array is empty. If it is empty, it displays the empty message. Otherwise, it iterates through the movies array, creates a list item for each movie with a link to the movie page, and appends it to the list element.
       function renderMovieList(listElement, movies, emptyMessage) {
         listElement.innerHTML = '';
 
+        // If the movies array is not an array or is empty, display the empty message in the list element and return
         if (!Array.isArray(movies) || movies.length === 0) {
           listElement.innerHTML = `<li>${emptyMessage}</li>`;
           return;
         }
 
+        // Iterate through the movies array, create a list item for each movie with a link to the movie page, 
+        // and append it to the list element
         movies.forEach((movie) => {
           const listItem = document.createElement('li');
           listItem.appendChild(createMovieLink(movie));
@@ -60,6 +72,10 @@
         });
       }
 
+      // The loadPerson function is an asynchronous function that fetches the person's details from the backend 
+      // using the person ID. It updates the page with the person's name, role, bio, and lists of movies they 
+      // acted in and directed. If there is an error during the fetch or processing of the response, it updates 
+      // the page to indicate that there was an error loading the person details.
       async function loadPerson() {
         if (!personId) {
           nameEl.textContent = 'Person not found';
@@ -67,22 +83,35 @@
           return;
         }
 
+        // try to fetch the person's details from the backend using the person ID, and if successful, update the page 
+        // with the person's name, role, bio, and lists of movies they acted in and directed. If there is an error 
+        // during the fetch or processing of the response, catch the error and update the page to indicate that there
+        //  was an error loading the person details.
         try {
+          // Fetch the person's details from the backend using the person ID, and await the response
           const response = await fetch(`http://localhost:3000/people/${encodeURIComponent(personId)}`);
           const person = await response.json();
 
+          // If the response is not successful, throw an error with the error message from the response or a default error message
           if (!response.ok) {
             throw new Error(person.error || 'Unable to load person');
           }
 
+          // If the response is successful, store the person ID in local storage, and update the page with the 
+          // person's name, role, bio, and lists of movies they acted in and directed
           window.localStorage.setItem('selectedPersonId', String(person.id));
           nameEl.textContent = person.name;
           roleEl.textContent = person.role ? `Role: ${person.role}` : '';
           bioEl.textContent = person.bio || 'No bio available.';
 
+          // render the lists of movies they acted in and directed using the renderMovieList function, 
+          // passing in the appropriate list element, movies array, and empty message for each list
           renderMovieList(actedMoviesList, person.actedMovies, 'No acting credits listed.');
           renderMovieList(directedMoviesList, person.directedMovies, 'No directing credits listed.');
         } 
+        // catch any errors that occur during the fetch request or while processing the response, log the error to the 
+        // console, and update the page to indicate that there was an error loading the person details. 
+        // Also, update the acted movies and directed movies lists to indicate that there was an error loading those details.
         catch (err) {
           nameEl.textContent = 'Error loading person';
           roleEl.textContent = '';
@@ -92,6 +121,7 @@
         }
       }
 
+      // Call the loadPerson function to fetch and display the person's details when the page loads
       loadPerson();
     </script>
   </body>
