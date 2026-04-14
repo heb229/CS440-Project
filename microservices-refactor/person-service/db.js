@@ -1,22 +1,22 @@
-//imports 
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
+//imports
+import sqlite3 from "sqlite3";
+import { open } from "sqlite";
 
 // Initialize the SQLite database connection and create tables if they don't exist
 export async function initDB() {
   // Open a connection to the SQLite database file named 'people.db' using the sqlite3 driver
   const db = await open({
-    filename: './people.db',
-    driver: sqlite3.Database
+    filename: "./people.db",
+    driver: sqlite3.Database,
   });
 
   // Enable foreign key constraints to ensure that movie cast members reference valid
-  await db.exec('PRAGMA foreign_keys = ON');
+  await db.exec("PRAGMA foreign_keys = ON");
 
-  // Create tables if they don't exist, including the people table for actors and directors, the movies table for movie details, 
-  // and the movie_cast table to represent the many-to-many relationship between movies and people. 
-  // The people table includes columns for id, name, role, and bio. The movies table includes columns for id, title, 
-  // year, genre, runtime, rating, synopsis, and director_id. The movie_cast table includes columns for id, movie_id, 
+  // Create tables if they don't exist, including the people table for actors and directors, the movies table for movie details,
+  // and the movie_cast table to represent the many-to-many relationship between movies and people.
+  // The people table includes columns for id, name, role, and bio. The movies table includes columns for id, title,
+  // year, genre, runtime, rating, synopsis, and director_id. The movie_cast table includes columns for id, movie_id,
   // person_id, and foreign key constraints to ensure referential integrity.
   await db.exec(`
     CREATE TABLE IF NOT EXISTS people (
@@ -24,25 +24,6 @@ export async function initDB() {
       name TEXT NOT NULL,
       role TEXT,
       bio TEXT
-    );
-
-    CREATE TABLE IF NOT EXISTS movies (
-      id INTEGER PRIMARY KEY,
-      title TEXT NOT NULL,
-      year INTEGER,
-      genre TEXT,
-      runtime INTEGER,
-      rating REAL,
-      director_id INTEGER
-    );
-
-    CREATE TABLE IF NOT EXISTS movie_cast (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      movie_id INTEGER NOT NULL,
-      person_id INTEGER NOT NULL,
-      UNIQUE(movie_id, person_id),
-      FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE,
-      FOREIGN KEY (person_id) REFERENCES people(id) ON DELETE CASCADE
     );
   `);
 
